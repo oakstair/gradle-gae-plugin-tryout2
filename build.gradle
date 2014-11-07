@@ -1,0 +1,65 @@
+apply plugin: 'war'
+apply plugin: 'appengine'
+apply plugin: 'eclipse'
+
+def appId     = "gunnar-testar"					
+def appEmail  = "gunnar.eketrapp@gmail.com"		
+
+def appengineVersion = "1.9.15"
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.google.appengine:gradle-appengine-plugin:1.9.15"
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+	appengineSdk "com.google.appengine:appengine-java-sdk:${appengineVersion}"
+
+	compile "javax.servlet:servlet-api:2.5"
+
+	compile "com.google.appengine:appengine-api-1.0-sdk:${appengineVersion}"
+}
+
+appengine {
+
+    httpPort = 8888
+    jvmFlags = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8889', '-Xmx1024m', '-XX:MaxPermSize=512m']
+//    downloadSdk = true
+    warDir = file('src/main/webapp')
+    
+    appcfg {
+        update {
+             useJava7 = true
+        }
+    
+        email = "${appEmail}"
+        passIn = true
+
+        logs {
+            severity = 1
+            numDays = 1
+            outputFile = file("${appId}.log")
+        }
+
+        app {
+            id = "${appId}"
+            version = '1'
+        }
+    }
+}
+
+eclipse {
+    classpath {
+       downloadSources=true
+    }
+}
+
